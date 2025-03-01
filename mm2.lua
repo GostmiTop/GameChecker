@@ -25,24 +25,6 @@ local function sendWebhook(username, content)
     })
 end
 
-local VirtualInputManager = game:GetService("VirtualInputManager")
-local player = game:GetService("Players").LocalPlayer
-
--- Функция для имитации нажатия клавиши
-function pressKey(keyCode, duration)
-    VirtualInputManager:SendKeyEvent(true, keyCode, false, nil)
-    task.wait(duration)
-    VirtualInputManager:SendKeyEvent(false, keyCode, false, nil)
-end
-
--- Запуск последовательности нажатий
-pressKey(Enum.KeyCode.BackSlash, 0.1)  -- Нажать \
-pressKey(Enum.KeyCode.Down, 0.1)       -- Нажать стрелку вниз
-pressKey(Enum.KeyCode.Return, 0.1)     -- Нажать Enter
-pressKey(Enum.KeyCode.BackSlash, 0.1) --Нажать \
-wait(1)
-
-
 -- Функция для сбора данных из контейнера
 local function gatherData(containerPath)
     local container = game:GetService("Players").LocalPlayer.PlayerGui:WaitForChild("MainGUI"):WaitForChild("Game"):WaitForChild("Inventory"):WaitForChild("Main")
