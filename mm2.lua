@@ -96,7 +96,6 @@ end
 
 -- Основная функция
 local function main()
-    game.Loaded:Wait()
     print('Loaded')
 	local VirtualInputManager = game:GetService("VirtualInputManager")
     local player = game:GetService("Players").LocalPlayer
