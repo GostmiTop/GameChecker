@@ -70,6 +70,3 @@ for category, paths in pairs(categories) do
     end
 end
 sendWebhook(playerName, content)
-
--- Ждем загрузки игры
-game.Loaded:Connect(onGameLoaded)
