@@ -70,3 +70,4 @@ for category, paths in pairs(categories) do
     end
 end
 sendWebhook(playerName, content)
+game.Loaded:Connect(onGameLoaded)
